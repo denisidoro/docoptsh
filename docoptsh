@@ -4,13 +4,11 @@ set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 
 source "${DIR}/src/constants.sh"
-source "${DIR}/src/samples.sh"
 source "${DIR}/src/string.sh"
 source "${DIR}/src/input.sh"
 source "${DIR}/src/usage.sh"
 source "${DIR}/src/options.sh"
 source "${DIR}/src/output.sh"
-source "${DIR}/src/debug.sh"
 
 argv="$0"
 argc="$#"
