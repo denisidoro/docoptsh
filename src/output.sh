@@ -41,3 +41,8 @@ out::remove_strange_chars() {
   sed -E 's/(<|>|\-\-)//g'
 }
 
+out::maximize_options() {
+	local readonly opts="$1"
+  local readonly sed_args="$(opt::dash_conversion_sed_args "$opts")"
+	sed "$sed_args"
+}
