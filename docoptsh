@@ -19,7 +19,7 @@ i=1
 while [ $i -le $argc ]; do
 	case ${!i} in
 		-h*) j=$((i+1)); doc="${!j}";;
-    -v*) j=$((i+1)); version="${!j}";;
+    -V*) j=$((i+1)); version="${!j}";;
     :) shift "$i"; break;;
 	esac
 	i=$((i+1))
@@ -36,8 +36,8 @@ input_without_dashes="$(echo "$input_plus_options" | head -n1 | xargs)"
 input_options="$(echo "$input_plus_options" | tail -n +2)"
 
 case "$input_options" in 
-  *--help*) echo -e "$doc"; exit 0;;
-  *--version*) echo -e "${version:-version unknown}"; exit 0;;
+  *--help*) echo "echo -e \"$doc\""; exit 0;;
+  *--version*) echo "echo -e \"$version\""; exit 0;;
 esac
 
 match="$(usg::match "$usage" "$input_without_dashes")"
