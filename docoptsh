@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+
+source "${DIR}/src/constants.sh"
+source "${DIR}/src/samples.sh"
+source "${DIR}/src/string.sh"
+source "${DIR}/src/input.sh"
+source "${DIR}/src/usage.sh"
+source "${DIR}/src/options.sh"
+source "${DIR}/src/output.sh"
+source "${DIR}/src/debug.sh"
+
+doc="$(echo -e "Usage:\n$spl_usage\n\nOptions:\n$spl_opts")"
+usage="$(echo "$doc" | usg::from_doc | usg::remove_first_word | usg::expand_optionals)"
+full_opts="$(echo "$doc" | opt::from_doc)"
+opts="$(echo "$full_opts" | opt::remove_description)"
+
+echo "doc: $doc"
+dbg::sep
+
+echo "options: $opts"
+dbg::sep
+
+echo "usage: $usage;"
+dbg::sep
+
+# exit
+# echo "$opts"
+# dbg::sep
+
+input="$(in::escape "$@" | tr '=' ' ' | in::expand_dashes)"
+
+echo "input: $input;"
+dbg::sep
+
+input_plus_options="$(echo "$input" | in::extract_dashes "$opts")"
+
+input_without_dashes="$(echo "$input_plus_options" | head -n1 | xargs)"
+input_options="$(echo "$input_plus_options" | tail -n +2)"
+
+echo "inputwd: $input_without_dashes"
+dbg::sep
+
+match="$(usg::match "$usage" "$input_without_dashes")"
+
+echo "match: $match;"
+dbg::sep
+
+code0="$(opt::defaults "$full_opts")"
+code1="$input_options"
+code2="$(usg::vars "$usage")"
+code3="$(in::vars "$input_without_dashes" "$match")"
+
+sed_args="$(opt::dash_conversion_sed_args "$opts")"
+
+echo -e "$code0\n\n$input_options\n\n$code1\n\n$code2\n\n$code3" \
+  | str::remove_blank_lines \
+  | sed "$sed_args" \
+  | out::add_equal_sign_plus_hacks \
+  | out::remove_strange_chars
+
+exit 0
