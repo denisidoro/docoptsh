@@ -1,0 +1,10 @@
+Ship helpers
+
+Usage:
+  ship [options] move <x> <y>
+  ship [fast] create
+  ship paint (green|red)
+
+Options:
+  -f --force             Ignore ongoing movement
+  -t --target <target>   Ship-id [default: 0] 

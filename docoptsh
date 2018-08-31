@@ -10,9 +10,7 @@ source "${DIR}/src/usage.sh"
 source "${DIR}/src/options.sh"
 source "${DIR}/src/output.sh"
 
-argv="$0"
 argc="$#"
-
 i=1
 while [ $i -le $argc ]; do
 	case ${!i} in
@@ -24,6 +22,7 @@ while [ $i -le $argc ]; do
 done
 
 usage="$(echo "$doc" | usg::from_doc | usg::remove_first_word | usg::expand_optionals)"
+
 full_opts="$(echo "$doc" | opt::from_doc)"
 opts="$(echo "$full_opts" | opt::remove_description)"
 
@@ -34,11 +33,15 @@ input_without_dashes="$(echo "$input_plus_options" | head -n1 | xargs)"
 input_options="$(echo "$input_plus_options" | tail -n +2)"
 
 case "$input_options" in 
-  *--help*) echo "echo -e \"$doc\""; exit 0;;
-  *--version*) echo "echo -e \"$version\""; exit 0;;
+  *--help*) out::echo "$doc"; exit 0;;
+  *--version*) out::echo "$version"; exit 0;;
 esac
 
 match="$(usg::match "$usage" "$input_without_dashes")"
+
+[[ -z "${match// }" ]] \
+  && out::echo "$doc" \
+  && exit 1;
 
 code0="$(opt::defaults "$full_opts")"
 code1="$input_options"
