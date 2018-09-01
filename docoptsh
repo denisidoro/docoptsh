@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# vim: filetype=sh
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
@@ -13,12 +14,21 @@ source "${DIR}/src/output.sh"
 argc="$#"
 i=1
 while [ $i -le $argc ]; do
-	case ${!i} in
-		-h*) j=$((i+1)); doc="${!j}";;
-    -V*) j=$((i+1)); version="${!j}";;
-    :) shift "$i"; break;;
-	esac
-	i=$((i+1))
+   case ${!i} in
+      -h*)
+         j=$((i + 1))
+         doc="${!j}"
+         ;;
+      -V*)
+         j=$((i + 1))
+         version="${!j}"
+         ;;
+      :)
+         shift "$i"
+         break
+         ;;
+   esac
+   i=$((i + 1))
 done
 
 usage="$(echo "$doc" | usg::from_doc | usg::remove_first_word | usg::expand_optionals)"
@@ -32,16 +42,22 @@ input_plus_options="$(echo "$input" | in::extract_dashes "$opts")"
 input_without_dashes="$(echo "$input_plus_options" | head -n1 | xargs)"
 input_options="$(echo "$input_plus_options" | tail -n +2)"
 
-case "$input_options" in 
-  *--help*) out::echo "$doc"; exit 0;;
-  *--version*) out::echo "$version"; exit 0;;
+case "$input_options" in
+   *--help*)
+      out::echo "$doc"
+      exit 0
+      ;;
+   *--version*)
+      out::echo "$version"
+      exit 0
+      ;;
 esac
 
 match="$(usg::match "$usage" "$input_without_dashes")"
 
-[[ -z "${match// }" ]] \
-  && out::echo "$doc" \
-  && exit 1;
+[[ -z "${match// /}" ]] \
+   && out::echo "$doc" \
+   && exit 1
 
 code0="$(opt::defaults "$full_opts")"
 code1="$input_options"
@@ -49,8 +65,7 @@ code2="$(usg::vars "$usage")"
 code3="$(in::vars "$input_without_dashes" "$match")"
 
 echo -e "$code0\n\n$input_options\n\n$code1\n\n$code2\n\n$code3" \
-  | str::remove_blank_lines \
-  | out::maximize_options "$opts" \
-  | out::add_equal_sign_plus_hacks \
-  | out::remove_strange_chars
-
+   | str::remove_blank_lines \
+   | out::maximize_options "$opts" \
+   | out::add_equal_sign_plus_hacks \
+   | out::remove_strange_chars
