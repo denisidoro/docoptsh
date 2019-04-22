@@ -1,0 +1,14 @@
+ship
+---------------------
+move 10 30
+---------------------
+move    true
+x       10
+y       30
+fast    false
+create  false
+paint   false
+green   false
+red     false
+force   null
+target  0
