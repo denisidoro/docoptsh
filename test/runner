@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+
+_tap() {
+  for i in $@; do
+    var="$i"
+    eval res=\$$var
+    echo "$var ${res:-null}" 
+  done
+}
+
+_2columns() {
+  xargs -n 2
+}
+
+_run_test() {
+  local readonly fixture_path="$1"
+  local readonly expected="$(echo "$2" | _2columns)"
+  shift 2
+
+  local readonly code="$(./docoptsh -h "$(cat "$fixture_path")" : $@)"  
+  eval "$code"  
+
+  columns="$(echo "$expected" | awk '{print $1}' | xargs)"
+  actual="$(_tap $columns | _2columns)"
+
+  if [[ $actual != $expected ]]; then
+    echo "FAILED"
+    echo
+    diff  <(echo "$expected" ) <(echo "$actual")
+    exit 1
+  else
+    echo "PASSED"
+  fi
+}
+
+_run_test_file() {
+  local readonly run_path="$1"
+  content="$(cat "$run_path")"
+
+  short_fixture="$(echo "$content" | head -n1)"
+  fixture="./test/fixtures/${short_fixture}.txt"
+  cmd="$(echo "$content" | sed -n '3p')"
+  expected="$(echo "$content" | sed -n '5,$p')"
+
+  _run_test "$fixture" "$expected" $cmd
+}
+
+cd "$DIR/.."
+
+for i in ./test/runs/*; do
+  _run_test_file "$i"
+done
