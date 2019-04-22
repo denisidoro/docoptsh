@@ -1,5 +1,7 @@
 ## Docoptsh
 
+[![CircleCI](https://circleci.com/gh/denisidoro/docoptsh.svg?style=svg)](https://circleci.com/gh/denisidoro/docoptsh)
+
 A command-line argument parser written in pure Bash, for  size-constrained systems, such as Android devices running [Termux](https://termux.com/), Windows as a secondary OS using the [Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) or [minimal Docker containers](https://hub.docker.com/_/alpine/).
 
 It implements a subset of the [docopt](http://docopt.org/) language, which should be enough for most scripting needs.
