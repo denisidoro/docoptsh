@@ -16,7 +16,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run: /app/test/runner
+      - run: ./test/runner
 
 workflows:
   version: 2
