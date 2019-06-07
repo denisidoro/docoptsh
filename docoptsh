@@ -45,10 +45,12 @@ input_options="$(echo "$input_plus_options" | tail -n +2)"
 case "$input_options" in
    *--help*)
       out::echo "$doc"
+      echo "exit 0;"
       exit 0
       ;;
    *--version*)
       out::echo "$version"
+      echo "exit 0;"
       exit 0
       ;;
 esac
